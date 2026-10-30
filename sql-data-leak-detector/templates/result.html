@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Security Evaluation Result</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body class="auth-body">
+    <div class="result-wrapper">
+        <!-- Top Status Banner -->
+        {% if result.action == 'BLOCKED' %}
+            <div class="result-header header-blocked">
+                <div class="header-icon">⚠️</div>
+                <div class="header-text">
+                    <h1>{{ title if title else '⚠️ SUSPICIOUS INPUT DETECTED' }}</h1>
+                    <p>Potential SQL Injection Attack Intercepted and Prevented</p>
+                </div>
+            </div>
+        {% elif result.action == 'FLAGGED' %}
+            <div class="result-header header-flagged">
+                <div class="header-icon">🚨</div>
+                <div class="header-text">
+                    <h1>🚨 SENSITIVE DATA DETECTED</h1>
+                    <p>Data Loss Prevention (DLP) Policy Triggered</p>
+                </div>
+            </div>
+        {% else %}
+            <div class="result-header header-allowed">
+                <div class="header-icon">✅</div>
+                <div class="header-text">
+                    <h1>✅ SAFE INPUT</h1>
+                    <p>No Security Threats or Data Leaks Detected</p>
+                </div>
+            </div>
+        {% endif %}
+
+        <!-- Detailed Evaluation Card -->
+        <div class="card result-card">
+            <div class="evaluation-grid">
+                <!-- Detection Type -->
+                <div class="eval-item">
+                    <span class="eval-label">Detection Type</span>
+                    <span class="eval-value eval-type">
+                        {% if result.detection_type == 'SQL Injection' %}
+                            ⚠️ SQL Injection
+                        {% elif 'Phone' in result.detection_type or 'Email' in result.detection_type or 'Credit' in result.detection_type %}
+                            🚨 {{ result.detection_type }}
+                        {% else %}
+                            None (Clean)
+                        {% endif %}
+                    </span>
+                </div>
+
+                <!-- Risk Level -->
+                <div class="eval-item">
+                    <span class="eval-label">Risk Level</span>
+                    <span class="eval-value">
+                        {% if result.risk_level == 'LOW' %}
+                            <span class="risk-badge risk-low">LOW</span>
+                        {% elif result.risk_level == 'MEDIUM' %}
+                            <span class="risk-badge risk-medium">MEDIUM</span>
+                        {% elif result.risk_level == 'HIGH' %}
+                            <span class="risk-badge risk-high">HIGH</span>
+                        {% elif result.risk_level == 'CRITICAL' %}
+                            <span class="risk-badge risk-critical">CRITICAL</span>
+                        {% else %}
+                            <span class="risk-badge">{{ result.risk_level }}</span>
+                        {% endif %}
+                    </span>
+                </div>
+
+                <!-- Action Taken -->
+                <div class="eval-item">
+                    <span class="eval-label">System Action</span>
+                    <span class="eval-value">
+                        {% if result.action == 'BLOCKED' %}
+                            <span class="action-badge action-blocked">🛑 BLOCKED</span>
+                        {% elif result.action == 'FLAGGED' %}
+                            <span class="action-badge action-flagged">🚩 FLAGGED</span>
+                        {% else %}
+                            <span class="action-badge action-allowed">✓ ALLOWED</span>
+                        {% endif %}
+                    </span>
+                </div>
+
+                <!-- Database Execution Safety -->
+                <div class="eval-item">
+                    <span class="eval-label">Database Execution</span>
+                    <span class="eval-value">
+                        {% if result.action == 'BLOCKED' %}
+                            <span class="db-safety-badge badge-prevented">🚫 Prevented Execution</span>
+                        {% else %}
+                            <span class="db-safety-badge badge-safe">🔒 Parameterized Query</span>
+                        {% endif %}
+                    </span>
+                </div>
+            </div>
+
+            <!-- Tested Input Section -->
+            <div class="input-display-box">
+                <div class="box-title">Scanned Input Text / Payload:</div>
+                <pre class="input-code"><code>{{ input_text }}</code></pre>
+            </div>
+
+            {% if result.matched_patterns %}
+            <!-- Matched Patterns Breakdown -->
+            <div class="matched-patterns-box">
+                <div class="box-title">Identified Threat Signatures / DLP Tokens:</div>
+                <ul class="pattern-list">
+                    {% for item in result.matched_patterns %}
+                    <li>
+                        <span class="bullet">▸</span>
+                        <code class="pattern-token">{{ item }}</code>
+                    </li>
+                    {% endfor %}
+                </ul>
+            </div>
+            {% endif %}
+
+            <!-- Technical / Viva Explanation -->
+            <div class="explanation-box">
+                <div class="box-title">🎓 Technical Explanation (For Viva Presentation):</div>
+                <p class="explanation-text">{{ result.explanation }}</p>
+                <div class="viva-note">
+                    <strong>Rule:</strong> Suspicious inputs are stopped at the security filter layer and logged into the SQLite <code>security_logs</code> table. The system never executes suspicious payloads into database queries.
+                </div>
+            </div>
+
+            <!-- Navigation Buttons -->
+            <div class="result-actions">
+                {% if source == 'login' %}
+                    <a href="{{ url_for('login') }}" class="btn btn-primary">
+                        <span>← Return to Login Page</span>
+                    </a>
+                {% else %}
+                    <a href="{{ url_for('dashboard') }}" class="btn btn-primary">
+                        <span>← Return to Security Dashboard</span>
+                    </a>
+                {% endif %}
+            </div>
+        </div>
+
+        <div class="security-footer-note">
+            <span>🛡️ Event recorded in SQLite audit database (<code>security_logs</code>).</span>
+        </div>
+    </div>
+</body>
+</html>

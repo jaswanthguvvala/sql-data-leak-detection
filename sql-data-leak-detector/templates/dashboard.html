@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Localhost Portal - Dashboard</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <!-- Top Navigation Bar -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="nav-brand">
+                <span class="brand-icon">🌐</span>
+                <span class="brand-title">Localhost Portal</span>
+                <span class="server-status-pill">
+                    <span class="pulse-dot"></span>
+                    <span>127.0.0.1:5000</span>
+                </span>
+            </div>
+            <div class="nav-user">
+                <div class="user-meta">
+                    <span class="user-avatar">👤</span>
+                    <span class="user-greeting"><strong>{{ user.name }}</strong> ({{ user.username }})</span>
+                    <span class="badge badge-role {{ 'badge-admin' if user.role == 'Admin' else 'badge-student' }}">
+                        {{ user.role }}
+                    </span>
+                </div>
+                <a href="{{ url_for('logout') }}" class="btn btn-outline btn-sm">Sign Out ➔</a>
+            </div>
+        </div>
+    </nav>
+
+    <main class="dashboard-container">
+        <!-- Hero Welcome Banner -->
+        <section class="security-banner-card">
+            <div class="banner-content">
+                <div class="badge-success-login">✅ ACCESS GRANTED</div>
+                <h1>Welcome to Localhost Portal, {{ user.name }}!</h1>
+                <p class="user-details">
+                    Authenticated session active for user <strong class="highlight-username">@{{ user.username }}</strong> with role 
+                    <span class="role-pill">{{ user.role }}</span>.
+                </p>
+            </div>
+            <div class="security-status-box">
+                <div class="status-label">Localhost Protection</div>
+                <div class="status-indicator">
+                    <span class="pulse-dot">🟢</span>
+                    <span class="status-text">SECURE</span>
+                </div>
+                <div class="status-sub">Parameterized queries & threat filter active.</div>
+            </div>
+        </section>
+
+        <!-- Localhost System Information & Stats Grid -->
+        <section class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-num">{{ stats.total }}</div>
+                <div class="stat-title">Total Security Audits</div>
+                <div class="stat-icon">📊</div>
+            </div>
+            <div class="stat-card stat-safe">
+                <div class="stat-num">{{ stats.allowed }}</div>
+                <div class="stat-title">Allowed / Clean Logins</div>
+                <div class="stat-icon">✅</div>
+            </div>
+            <div class="stat-card stat-blocked">
+                <div class="stat-num">{{ stats.blocked }}</div>
+                <div class="stat-title">Blocked Unusual Chars & Attacks</div>
+                <div class="stat-icon">🛡️</div>
+            </div>
+            <div class="stat-card stat-flagged">
+                <div class="stat-num">{{ stats.flagged }}</div>
+                <div class="stat-title">Flagged Sensitive Data (DLP)</div>
+                <div class="stat-icon">🚨</div>
+            </div>
+        </section>
+
+        <!-- System & Account Information Row -->
+        <div class="info-dual-grid">
+            <!-- Account Profile Card -->
+            <div class="card info-box">
+                <div class="card-header">
+                    <h2>👤 User Account Details</h2>
+                    <span class="security-tag tag-shield">Active Session</span>
+                </div>
+                <div class="details-list">
+                    <div class="detail-row">
+                        <span class="detail-label">Full Name:</span>
+                        <span class="detail-value"><strong>{{ user.name }}</strong></span>
+                    </div>
+                    <div class="detail-row">
+                        <span class="detail-label">Username:</span>
+                        <span class="detail-value"><code>{{ user.username }}</code></span>
+                    </div>
+                    <div class="detail-row">
+                        <span class="detail-label">Assigned Role:</span>
+                        <span class="detail-value"><span class="badge {{ 'badge-admin' if user.role == 'Admin' else 'badge-student' }}">{{ user.role }}</span></span>
+                    </div>
+                    <div class="detail-row">
+                        <span class="detail-label">Authentication Method:</span>
+                        <span class="detail-value">PBKDF2-SHA256 Password Hash</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Server Specs Card -->
+            <div class="card info-box">
+                <div class="card-header">
+                    <h2>🖥️ Localhost Environment</h2>
+                    <span class="security-tag tag-engine">Flask 3.1</span>
+                </div>
+                <div class="details-list">
+                    <div class="detail-row">
+                        <span class="detail-label">Host Address:</span>
+                        <span class="detail-value"><code>127.0.0.1 (localhost)</code></span>
+                    </div>
+                    <div class="detail-row">
+                        <span class="detail-label">Port:</span>
+                        <span class="detail-value"><code>5000</code></span>
+                    </div>
+                    <div class="detail-row">
+                        <span class="detail-label">Database Engine:</span>
+                        <span class="detail-value">SQLite 3 (<code>security.db</code>)</span>
+                    </div>
+                    <div class="detail-row">
+                        <span class="detail-label">Protection Mode:</span>
+                        <span class="detail-value"><span class="badge badge-safe">Parameterized Queries (Active)</span></span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Interactive Security & Data Leak Inspector -->
+        <section class="card inspector-card">
+            <div class="card-header">
+                <div>
+                    <h2>🧪 Live Data Leak & SQLi Inspector</h2>
+                    <p class="card-subtitle">Test any text, SQL query, email, or phone number through the real-time detection engine.</p>
+                </div>
+                <span class="security-tag tag-engine">Real-Time Engine</span>
+            </div>
+
+            <form action="{{ url_for('inspect_input') }}" method="POST" class="inspector-form">
+                <div class="form-group">
+                    <label for="test_input">Input Text or Query to Inspect:</label>
+                    <textarea 
+                        name="test_input" 
+                        id="test_input" 
+                        rows="3" 
+                        placeholder="Type a sample sentence, email, phone number, or SQL query..." 
+                        required
+                    ></textarea>
+                </div>
+
+                <div class="inspector-actions">
+                    <button type="submit" class="btn btn-primary" id="inspectBtn">
+                        <span>🔍 Run Security Inspection</span>
+                    </button>
+                    <span class="help-hint">Evaluates SQL injection, sensitive data leakage (DLP), and assigns risk level.</span>
+                </div>
+            </form>
+
+            <!-- Quick Test Chips -->
+            <div class="testcases-palette">
+                <div class="palette-header">
+                    <span>⚡ Quick Test Scenarios (Click to Load):</span>
+                </div>
+                <div class="palette-buttons">
+                    <button type="button" class="btn-chip chip-success" onclick="setInspectorTest('Please confirm my project status for next week.')">
+                        Safe Clean Text
+                    </button>
+                    <button type="button" class="btn-chip chip-danger" onclick="setInspectorTest('\' OR \'1\'=\'1')">
+                        SQLi: ' OR '1'='1
+                    </button>
+                    <button type="button" class="btn-chip chip-danger" onclick="setInspectorTest('admin\' --')">
+                        SQLi: admin' --
+                    </button>
+                    <button type="button" class="btn-chip chip-danger" onclick="setInspectorTest('\' UNION SELECT id, username, password_hash FROM users--')">
+                        SQLi: UNION SELECT
+                    </button>
+                    <button type="button" class="btn-chip chip-warning" onclick="setInspectorTest('Contact me at 9876543210 for details')">
+                        DLP: Phone Number
+                    </button>
+                    <button type="button" class="btn-chip chip-warning" onclick="setInspectorTest('Send invoice to user@example.com')">
+                        DLP: Email Address
+                    </button>
+                    <button type="button" class="btn-chip chip-warning" onclick="setInspectorTest('Card number 4532 8901 2345 6789')">
+                        DLP: Credit Card
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- Recent Security Activity Table -->
+        <section class="card table-card">
+            <div class="card-header table-header-flex">
+                <div>
+                    <h2>📜 Live Security Audit Activity</h2>
+                    <p class="card-subtitle">Real-time audit records stored in the SQLite <code>security_logs</code> database.</p>
+                </div>
+                {% if is_admin %}
+                <form action="{{ url_for('clear_logs') }}" method="POST" onsubmit="return confirm('Clear all security logs?');">
+                    <button type="submit" class="btn btn-outline-danger btn-sm">Clear Audit Logs</button>
+                </form>
+                {% endif %}
+            </div>
+
+            <!-- Filter Controls -->
+            <div class="table-filter-bar">
+                <span class="filter-label">Filter by Action:</span>
+                <button type="button" class="filter-btn active" onclick="filterTable('ALL')">All</button>
+                <button type="button" class="filter-btn" onclick="filterTable('ALLOWED')">Allowed</button>
+                <button type="button" class="filter-btn" onclick="filterTable('FLAGGED')">Flagged</button>
+                <button type="button" class="filter-btn" onclick="filterTable('BLOCKED')">Blocked</button>
+            </div>
+
+            <div class="table-responsive">
+                <table class="security-table" id="securityLogsTable">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>User</th>
+                            <th>Input / Reason</th>
+                            <th>Detection</th>
+                            <th>Risk Level</th>
+                            <th>Action</th>
+                            <th>Timestamp</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% if logs %}
+                            {% for log in logs %}
+                            <tr class="log-row" data-action="{{ log.action }}">
+                                <td class="col-id">#{{ log.id }}</td>
+                                <td class="col-user"><strong>{{ log.username }}</strong></td>
+                                <td class="col-input">
+                                    <code class="input-preview" title="{{ log.input_text }}">{{ log.input_text }}</code>
+                                </td>
+                                <td class="col-detection">
+                                    {% if 'SQL' in log.detection_type or 'Unusual' in log.detection_type %}
+                                        <span class="detection-badge badge-sqli">⚠️ {{ log.detection_type }}</span>
+                                    {% elif 'Phone' in log.detection_type or 'Email' in log.detection_type or 'Credit' in log.detection_type %}
+                                        <span class="detection-badge badge-dlp">🚨 {{ log.detection_type }}</span>
+                                    {% elif 'Unauthorized' in log.detection_type or 'Not Found' in log.detection_type %}
+                                        <span class="detection-badge badge-auth">🔒 {{ log.detection_type }}</span>
+                                    {% else %}
+                                        <span class="detection-badge badge-none">None (Clean)</span>
+                                    {% endif %}
+                                </td>
+                                <td class="col-risk">
+                                    {% if log.risk_level == 'LOW' %}
+                                        <span class="risk-badge risk-low">LOW</span>
+                                    {% elif log.risk_level == 'MEDIUM' %}
+                                        <span class="risk-badge risk-medium">MEDIUM</span>
+                                    {% elif log.risk_level == 'HIGH' %}
+                                        <span class="risk-badge risk-high">HIGH</span>
+                                    {% elif log.risk_level == 'CRITICAL' %}
+                                        <span class="risk-badge risk-critical">CRITICAL</span>
+                                    {% else %}
+                                        <span class="risk-badge">{{ log.risk_level }}</span>
+                                    {% endif %}
+                                </td>
+                                <td class="col-action">
+                                    {% if log.action == 'BLOCKED' %}
+                                        <span class="action-badge action-blocked">🛑 BLOCKED</span>
+                                    {% elif log.action == 'FLAGGED' %}
+                                        <span class="action-badge action-flagged">🚩 FLAGGED</span>
+                                    {% elif log.action == 'LOGIN SUCCESS' %}
+                                        <span class="action-badge action-success">✅ LOGIN SUCCESS</span>
+                                    {% elif log.action == 'LOGIN REJECTED' or log.action == 'LOGIN FAILED' %}
+                                        <span class="action-badge action-failed">❌ REJECTED</span>
+                                    {% elif log.action == 'USER REGISTERED' %}
+                                        <span class="action-badge action-success">➕ REGISTERED</span>
+                                    {% else %}
+                                        <span class="action-badge action-allowed">✓ ALLOWED</span>
+                                    {% endif %}
+                                </td>
+                                <td class="col-time">{{ log.timestamp }}</td>
+                            </tr>
+                            {% endfor %}
+                        {% else %}
+                            <tr>
+                                <td colspan="7" class="empty-state">No security logs recorded yet. Run a test above!</td>
+                            </tr>
+                        {% endif %}
+                    </tbody>
+                </table>
+            </div>
+        </section>
+    </main>
+
+    <footer class="footer">
+        <p>Localhost Portal • SQL-Based Data Leak Detection & Prevention System • Running on <code>http://127.0.0.1:5000</code></p>
+    </footer>
+
+    <script src="{{ url_for('static', filename='script.js') }}"></script>
+</body>
+</html>

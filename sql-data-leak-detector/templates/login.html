@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sign In - Localhost Portal</title>
+    <!-- Modern Google Typography -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body class="auth-body">
+    <div class="auth-wrapper">
+        <!-- Minimal Brand Header -->
+        <div class="brand-header">
+            <div class="shield-badge">🛡️</div>
+            <h1>Localhost Secure Portal</h1>
+            <p class="subtitle">Sign in with your username and password</p>
+        </div>
+
+        <!-- Dynamic Security & Status Alert -->
+        {% if status_title %}
+        <div class="alert-banner {{ 'alert-blocked' if status_type == 'blocked' else ('alert-success' if status_type == 'success' else 'alert-danger') }}">
+            <div class="alert-icon">
+                {% if status_type == 'blocked' %}🛑{% elif status_type == 'success' %}✅{% else %}❌{% endif %}
+            </div>
+            <div class="alert-body">
+                <div class="alert-title">{{ status_title }}</div>
+                <div class="alert-text">{{ status_message }}</div>
+            </div>
+        </div>
+        {% endif %}
+
+        <!-- Clean Authentication Card -->
+        <div class="card auth-card">
+            <!-- Tabs: Sign In / Create Account -->
+            <div class="auth-tabs">
+                <button 
+                    type="button" 
+                    class="auth-tab-btn {{ 'active' if active_tab != 'register' else '' }}" 
+                    id="tabSignIn" 
+                    onclick="switchTab('login')"
+                >
+                    Sign In
+                </button>
+                <button 
+                    type="button" 
+                    class="auth-tab-btn {{ 'active' if active_tab == 'register' else '' }}" 
+                    id="tabCreate" 
+                    onclick="switchTab('register')"
+                >
+                    Create Account
+                </button>
+            </div>
+
+            <!-- 1. SIGN IN FORM -->
+            <form 
+                action="{{ url_for('login') }}" 
+                method="POST" 
+                id="loginForm" 
+                class="auth-form {{ 'hidden' if active_tab == 'register' else '' }}"
+            >
+                <div class="form-group">
+                    <label for="username">Username</label>
+                    <div class="input-wrapper">
+                        <span class="input-icon">👤</span>
+                        <input 
+                            type="text" 
+                            id="username" 
+                            name="username" 
+                            value="{{ entered_username if entered_username else '' }}" 
+                            placeholder="Enter username (e.g. harsha, admin)" 
+                            required 
+                            autocomplete="off"
+                            spellcheck="false"
+                        >
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="password">Password</label>
+                    <div class="input-wrapper">
+                        <span class="input-icon">🔒</span>
+                        <input 
+                            type="password" 
+                            id="password" 
+                            name="password" 
+                            placeholder="Enter password" 
+                            required
+                        >
+                        <button type="button" class="btn-toggle-pwd" onclick="togglePassword('password', this)" title="Toggle password visibility">
+                            👁️
+                        </button>
+                    </div>
+                </div>
+
+                <button type="submit" id="loginBtn" class="btn btn-primary btn-block">
+                    <span>Sign In to Localhost ➔</span>
+                </button>
+            </form>
+
+            <!-- 2. CREATE ACCOUNT FORM -->
+            <form 
+                action="{{ url_for('register') }}" 
+                method="POST" 
+                id="registerForm" 
+                class="auth-form {{ '' if active_tab == 'register' else 'hidden' }}"
+            >
+                <div class="form-group">
+                    <label for="reg_name">Full Name</label>
+                    <div class="input-wrapper">
+                        <span class="input-icon">🏷️</span>
+                        <input 
+                            type="text" 
+                            id="reg_name" 
+                            name="reg_name" 
+                            placeholder="e.g. Harsha Kumar" 
+                            autocomplete="name"
+                        >
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="reg_username">Username</label>
+                    <div class="input-wrapper">
+                        <span class="input-icon">👤</span>
+                        <input 
+                            type="text" 
+                            id="reg_username" 
+                            name="reg_username" 
+                            placeholder="Letters, numbers & _ only" 
+                            required 
+                            autocomplete="off"
+                            spellcheck="false"
+                        >
+                    </div>
+                    <span class="field-hint">No special characters allowed (e.g. ', ", ;, --, $, @)</span>
+                </div>
+
+                <div class="form-group">
+                    <label for="reg_password">Password</label>
+                    <div class="input-wrapper">
+                        <span class="input-icon">🔒</span>
+                        <input 
+                            type="password" 
+                            id="reg_password" 
+                            name="reg_password" 
+                            placeholder="Create a secure password" 
+                            required
+                        >
+                        <button type="button" class="btn-toggle-pwd" onclick="togglePassword('reg_password', this)" title="Toggle password visibility">
+                            👁️
+                        </button>
+                    </div>
+                </div>
+
+                <button type="submit" id="registerBtn" class="btn btn-success btn-block">
+                    <span>Create Account ➔</span>
+                </button>
+            </form>
+
+            <!-- Discreet Collapsible Demo Presets (Clean by default) -->
+            <div class="demo-collapsible">
+                <button type="button" class="demo-toggle-btn" onclick="toggleDemoDrawer()">
+                    <span>💡 Demo Accounts & Test Payloads</span>
+                    <span id="demoDrawerArrow">▼</span>
+                </button>
+                <div id="demoDrawerContent" class="demo-drawer-content hidden">
+                    <div class="demo-drawer-inner">
+                        <div class="drawer-section">
+                            <span class="drawer-label">Registered Accounts (Click to Fill):</span>
+                            <div class="chip-row">
+                                <button type="button" class="btn-chip chip-success" onclick="quickFill('harsha', 'harsha123')">
+                                    harsha / harsha123
+                                </button>
+                                <button type="button" class="btn-chip chip-info" onclick="quickFill('admin', 'admin123')">
+                                    admin / admin123
+                                </button>
+                                <button type="button" class="btn-chip chip-secondary" onclick="quickFill('student', 'student123')">
+                                    student / student123
+                                </button>
+                            </div>
+                        </div>
+
+                        <div class="drawer-section">
+                            <span class="drawer-label">Test Password Attack on Existing User:</span>
+                            <div class="chip-row">
+                                <button type="button" class="btn-chip chip-warning" onclick="quickFill('harsha', 'wrongPass999')">
+                                    harsha (Wrong Password)
+                                </button>
+                            </div>
+                        </div>
+
+                        <div class="drawer-section">
+                            <span class="drawer-label">Test Unusual / Special Characters (Instant Block):</span>
+                            <div class="chip-row">
+                                <button type="button" class="btn-chip chip-danger" onclick="quickFill('\' OR \'1\'=\'1', 'pass')">
+                                    ' OR '1'='1 (SQLi)
+                                </button>
+                                <button type="button" class="btn-chip chip-danger" onclick="quickFill('admin\' --', 'pass')">
+                                    admin' -- (Comment)
+                                </button>
+                                <button type="button" class="btn-chip chip-danger" onclick="quickFill('user@#$special', 'pass')">
+                                    user@#$special
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Localhost Footer Note -->
+        <div class="auth-server-tag">
+            <span class="pulse-indicator"></span>
+            <span>Running on Localhost: <strong>http://127.0.0.1:5000</strong></span>
+        </div>
+    </div>
+
+    <script src="{{ url_for('static', filename='script.js') }}"></script>
+</body>
+</html>
